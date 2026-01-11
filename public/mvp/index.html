@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gustom MVP - Complete Flow</title>
+    
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+    <style>
+        :root {
+            /* --- COLOR PALETTE --- */
+            --primary: #EE6C2B;
+            --primary-dim: #CC561F;
+            --bg-main: #121212;
+            --surface-glass: rgba(20, 20, 20, 0.95);
+            --surface-card: rgba(30, 30, 30, 0.6);
+            --text-white: #FFFFFF;
+            --text-gray: #A0A0A0;
+            --bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* --- GLOBAL RESET & TYPO --- */
+        .material-symbols-rounded {
+            font-family: 'Material Symbols Rounded';
+            font-weight: normal; font-style: normal; font-size: 24px;
+            display: inline-block; line-height: 1; text-transform: none;
+            letter-spacing: normal; word-wrap: normal; white-space: nowrap; direction: ltr;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+
+        body {
+            margin: 0; background-color: var(--bg-main);
+            font-family: 'Inter', sans-serif; color: var(--text-white);
+            overflow: hidden;
+        }
+
+        /* --- UI COMPONENTS --- */
+        .btn-active:active { transform: scale(0.92); opacity: 0.8; transition: transform 0.1s ease; }
+        .icon-fill-active { font-variation-settings: 'FILL' 1; color: var(--primary) !important; }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-main); z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+        .splash-logo { font-size: 48px; font-weight: 800; letter-spacing: -2px; color: var(--text-white); display: flex; align-items: center; }
+        .splash-logo span { color: var(--primary); }
+
+        /* --- APP CONTAINER --- */
+        #app-container { width: 100%; height: 100vh; position: relative; display: none; }
+
+        /* --- FEED (HOME) CSS --- */
+        .feed-scroll { height: 100%; width: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+        .feed-scroll::-webkit-scrollbar { display: none; }
+        .feed-item { height: 100vh; width: 100%; scroll-snap-align: start; position: relative; background: #000; overflow: hidden; }
+        .video-player { width: 100%; height: 100%; object-fit: cover; transform: scale(1.02); }
+        .gradient-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 40%, transparent 100%); pointer-events: none; }
+
+        /* Home Header */
+        .top-header {
+            position: absolute; top: 0; left: 0; width: 100%; padding: 50px 20px 10px 20px;
+            display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; z-index: 20;
+        }
+        .location-badge { grid-column: 2; justify-self: center; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .icon-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); backdrop-filter: blur(4px); }
+
+        /* Home Sidebar */
+        .right-sidebar { position: absolute; right: 12px; bottom: 280px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 20; }
+        .action-group { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+        .action-group .material-symbols-rounded { font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); transition: all 0.2s var(--bounce); }
+        .action-label { font-size: 12px; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+
+        /* Home Card */
+        .restaurant-card {
+            position: absolute; bottom: 140px; left: 16px; right: 16px;
+            background: var(--surface-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border-radius: 24px; padding: 16px; z-index: 20; transition: background 0.2s;
+        }
+        .restaurant-card:active { background: rgba(50, 50, 50, 0.7); }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+        .title-row { display: flex; align-items: center; gap: 6px; }
+        .rest-name { font-size: 17px; font-weight: 700; color: var(--text-white); }
+        .verified-badge { color: var(--text-white); font-size: 16px; font-variation-settings: 'FILL' 1; }
+        .meta-row { font-size: 13px; color: var(--text-gray); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; font-weight: 500; }
+        .description-text { font-size: 13px; line-height: 1.4; color: #DDD; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding-right: 20px; }
+        .see-more { font-weight: 700; color: var(--text-white); }
+        .chevron-circle { position: absolute; right: 16px; bottom: 16px; width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        /* --- EXPLORE SCREEN CSS --- */
+        #explore-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a1a; z-index: 10; overflow: hidden; }
+        .map-background {
+            width: 100%; height: 100%;
+            /* URL del mapa oscuro */
+            background-image: url('https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/map.jpg'); 
+            background-color: #222; /* Fallback color */
+            background-size: cover; background-position: center; position: relative; filter: brightness(0.8);
+        }
+        .map-marker { position: absolute; background: var(--surface-card); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; color: var(--text-white); box-shadow: 0 4px 10px rgba(0,0,0,0.5); transform: translate(-50%, -50%); }
+        .map-marker.active { background: var(--primary); z-index: 2; }
+        
+        .explore-header { position: absolute; top: 0; left: 0; width: 100%; padding: 50px 16px 16px; background: linear-gradient(to bottom, rgba(18,18,18,0.9), transparent); z-index: 5; }
+        .search-bar { background: rgba(44, 44, 44, 0.9); backdrop-filter: blur(10px); border-radius: 12px; height: 48px; display: flex; align-items: center; padding: 0 16px; gap: 10px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .search-bar input { background: transparent; border: none; color: white; flex: 1; font-family: 'Inter'; font-size: 14px; outline: none; }
+        .filter-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-row::-webkit-scrollbar { display: none; }
+        .filter-chip { background: rgba(44, 44, 44, 0.9); padding: 6px 12px; border-radius: 20px; font-size: 12px; white-space: nowrap; display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.1); }
+        .filter-chip.active { background: var(--primary); border-color: var(--primary); }
+
+        .bottom-sheet { position: absolute; bottom: 90px; left: 0; width: 100%; height: 40%; background: #1E1E1E; border-radius: 24px 24px 0 0; box-shadow: 0 -5px 30px rgba(0,0,0,0.5); padding: 10px 16px; display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.1); }
+        .drag-handle { width: 40px; height: 4px; background: #444; border-radius: 2px; margin: 0 auto 15px; }
+        .sheet-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 15px; }
+        .sheet-title { font-size: 18px; font-weight: 700; }
+
+
+        .sheet-list { 
+            overflow-y: auto; 
+            flex: 1; 
+            /* Ocultar barra en Firefox */
+            scrollbar-width: none; 
+            /* Ocultar barra en IE/Edge */
+            -ms-overflow-style: none; 
+        }
+
+        /* Ocultar barra en Chrome/Safari/Webkit */
+        .sheet-list::-webkit-scrollbar { 
+            display: none; 
+        }
+
+
+        .list-item { display: flex; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .list-thumb { width: 80px; height: 80px; border-radius: 12px; background: #333; object-fit: cover; }
+        .list-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+        /* --- WALLET CSS (PANTALLA 3) --- */
+        #wallet-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-main); z-index: 10; padding: 20px; padding-bottom: 100px; overflow-y: auto; }
+        .wallet-header { margin-top: 40px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .wallet-title { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+
+        .balance-card { background: linear-gradient(135deg, var(--primary), #FF9100); border-radius: 20px; padding: 20px; color: white; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(238, 108, 43, 0.3); position: relative; overflow: hidden; }
+        .balance-label { font-size: 11px; opacity: 0.9; font-weight: 600; letter-spacing: 1px; }
+        .balance-amount { font-size: 36px; font-weight: 800; margin: 5px 0; }
+        .balance-note { font-size: 11px; opacity: 0.8; }
+        .balance-card::after { content: 'G'; position: absolute; right: -10px; bottom: -20px; font-size: 120px; font-weight: 900; opacity: 0.1; transform: rotate(-10deg); }
+
+        .section-title { font-size: 12px; color: var(--text-gray); font-weight: 700; margin-bottom: 15px; letter-spacing: 0.5px; }
+        .active-ticket-card { background: var(--surface-card); border-radius: 16px; padding: 16px; border-left: 4px solid var(--primary); margin-bottom: 30px; display: flex; flex-direction: column; gap: 10px; }
+        .status-badge { color: #4CAF50; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .ticket-rest-name { font-size: 18px; font-weight: 700; }
+        .ticket-date { font-size: 13px; color: #DDD; }
+        .btn-qr { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 5px; }
+
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .history-info h4 { margin: 0; font-size: 14px; font-weight: 600; }
+        .history-info p { margin: 2px 0 0; font-size: 11px; color: var(--text-gray); }
+        .history-action { text-align: right; }
+        .history-price { font-size: 14px; font-weight: 700; display: block; }
+        .btn-repeat { font-size: 11px; color: var(--primary); font-weight: 600; text-decoration: none; }
+
+        /* --- QR SCREEN CSS (PANTALLA 4) --- */
+        #qr-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #121212; z-index: 200; display: none; flex-direction: column; }
+        .qr-header { padding: 50px 20px 20px; display: flex; align-items: center; gap: 10px; }
+        .btn-back { width: 40px; height: 40px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .golden-ticket { margin: 20px; background: white; border-radius: 24px; color: black; overflow: hidden; position: relative; }
+        .golden-ticket::before, .golden-ticket::after { content: ''; position: absolute; top: 65%; width: 24px; height: 24px; background: #121212; border-radius: 50%; }
+        .golden-ticket::before { left: -12px; }
+        .golden-ticket::after { right: -12px; }
+        .ticket-top { padding: 30px 20px; text-align: center; border-bottom: 2px dashed #ddd; }
+        .ticket-bottom { padding: 30px 20px; }
+        .qr-image { width: 180px; height: 180px; margin: 0 auto 20px; display: block; }
+        .code-text { font-family: monospace; font-size: 18px; letter-spacing: 4px; font-weight: 700; text-align: center; color: #333; }
+        .ticket-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .ticket-field label { display: block; font-size: 10px; color: #666; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
+        .ticket-field div { font-size: 13px; font-weight: 600; color: #000; }
+
+        /* --- NAV BAR CSS --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; height: 90px;
+            background: var(--surface-glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 15px 20px; z-index: 100; border-top: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px 20px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #666; gap: 4px; cursor: pointer; width: 60px; }
+        .nav-item span { font-size: 10px; font-weight: 500; }
+        .nav-item .material-symbols-rounded { font-size: 26px; transition: color 0.2s; }
+        .nav-item.active { color: var(--text-white); }
+        .nav-item.active .material-symbols-rounded { font-variation-settings: 'FILL' 1; }
+
+        .nav-fab-container { position: relative; top: -35px; width: 64px; height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .nav-fab { width: 56px; height: 56px; background: #2A2A2A; border-radius: 18px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 20px rgba(0,0,0,0.4); color: var(--text-white); transition: background 0.2s, transform 0.1s; }
+        .nav-fab-container:active .nav-fab { background: var(--primary); border-color: var(--primary); transform: scale(0.95); }
+        .nav-fab-label { margin-top: 6px; font-size: 10px; color: var(--text-gray); font-weight: 500; }
+
+        /*PERFIL RESTAURANTE**************************************************************/
+
+        /* --- PERFIL RESTAURANTE (PANTALLAS 5 y 6) --- */
+        #profile-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #121212; z-index: 50;
+            display: none; 
+            /* Flexbox para manejar scroll vs fijo */
+            flex-direction: column; 
+            overflow: hidden; 
+        }
+
+        /* Contenedor que hace Scroll */
+        .profile-scroll-content {
+            flex: 1; /* Ocupa todo el espacio disponible */
+            overflow-y: auto; /* Solo esto se mueve */
+            padding-bottom: 100px; /* Espacio para que el último item no quede tapado por el botón */
+            position: relative;
+        }
+        
+        /* Ocultar barra de scroll en el perfil */
+        .profile-scroll-content::-webkit-scrollbar { display: none; }
+
+        /* Footer Fijo (Ahora usando Absolute relativo al profile-screen) */
+        .sticky-footer {
+            position: absolute; 
+            bottom: 0; left: 0; width: 100%;
+            padding: 20px 20px 30px 20px;
+            /* Quitamos pointer-events: none para evitar conflictos */
+            background: linear-gradient(to top, #121212 90%, transparent);
+            z-index: 60; 
+        }
+
+        /* Hero Image & Info */
+        .profile-hero { padding: 40px 20px 20px; }
+        .profile-title { font-size: 28px; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .rating-pill { background: #333; padding: 4px 10px; border-radius: 20px; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        
+        .tags-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .tag-capsule { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tag-orange { background: var(--primary); color: white; }
+        .tag-grey { background: #333; color: #ccc; display: flex; align-items: center; gap: 4px; }
+
+        .social-proof { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #FFD700; margin-bottom: 10px; }
+        .meta-details { font-size: 13px; color: #888; margin-bottom: 15px; }
+        .profile-desc { font-size: 14px; line-height: 1.5; color: #ddd; margin-bottom: 25px; }
+
+        /* Selector de Horas */
+        .time-selector { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 30px; cursor: grab; z-index: 10;position: relative; }
+        .time-selector::-webkit-scrollbar { display: none; }
+        .time-chip { 
+            background: #2a2a2a; border: 1px solid #444; color: #fff; 
+            padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; white-space: nowrap; 
+            transition: all 0.2s; cursor: pointer;
+        }
+        .time-chip.active { background: var(--primary); border-color: var(--primary); }
+        .time-chip.disabled { opacity: 0.3; }
+
+        /* Secciones (Experiencias y Carta) */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
+        .section-h2 { font-size: 14px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .link-see-all { font-size: 12px; color: white; text-decoration: underline; }
+
+        /* Carrusel Experiencias */
+        .experience-carousel { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 30px; cursor: grab;z-index: 10;position: relative; }
+        .experience-carousel::-webkit-scrollbar { display: none; }
+        .exp-card { min-width: 260px; height: 160px; border-radius: 16px; background: #333; position: relative; overflow: hidden; }
+        .exp-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+        .exp-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
+        .exp-title { font-size: 16px; font-weight: 700; color: white; }
+        .exp-price { font-size: 13px; font-weight: 600; color: var(--primary); margin-top: 2px; }
+
+        /* Grilla Carta (3 columnas) */
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .menu-item { display: flex; flex-direction: column; gap: 6px; }
+        .menu-thumb { 
+            width: 100%; aspect-ratio: 1; background: #333; border-radius: 16px; 
+            position: relative; overflow: hidden; 
+        }
+        .menu-img { width: 100%; height: 100%; object-fit: cover; }
+        .price-tag { 
+            position: absolute; bottom: 6px; right: 6px; 
+            background: rgba(0,0,0,0.8); color: white; 
+            padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; 
+        }
+        .menu-name { font-size: 11px; font-weight: 500; color: #ccc; line-height: 1.3; }
+
+        /* Botón Flotante "Reservar" */
+        .sticky-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            padding: 20px 20px 30px 20px;
+            background: linear-gradient(to top, #121212 80%, transparent);
+            z-index: 60; /* Click through empty space */
+        }
+        .btn-reserve {
+            pointer-events: auto;
+            background: var(--primary); color: white;
+            width: 100%; padding: 16px; border-radius: 16px;
+            font-size: 16px; font-weight: 700; border: none;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 10px 30px rgba(238, 108, 43, 0.4);
+            cursor: pointer;
+        }
+
+        /* --- VIDEO HERO PERFIL --- */
+        .profile-video-container {
+            width: 100%;
+            height: 350px; /* Altura del video */
+            position: relative;
+        }
+        
+        #prof-hero-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Sombra inferior para unir con el contenido */
+        .hero-gradient {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100px;
+            background: linear-gradient(to top, #121212 10%, transparent);
+        }
+
+
+
+
+
+        /***************************************************************/
+
+        /*CHECKOUT**************************************************************/
+
+        /* --- CHECKOUT SCREEN (PANTALLA 7) --- */
+        #checkout-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #121212; z-index: 60; /* Encima del perfil */
+            display: none; flex-direction: column;
+            padding: 20px; overflow-y: auto;
+        }
+
+        .checkout-header {
+            margin-top: 40px; margin-bottom: 20px;
+            display: grid; grid-template-columns: 40px 1fr 40px; align-items: center;
+        }
+        .checkout-title { grid-column: 2; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+
+        /* Resumen Restaurante */
+        .checkout-rest-info {
+            display: flex; gap: 15px; align-items: center; margin-bottom: 30px;
+            padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .checkout-thumb { width: 60px; height: 60px; border-radius: 12px; background: #333; object-fit: cover; }
+        .checkout-details h3 { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+        .checkout-details p { margin: 0; font-size: 12px; color: var(--text-gray); }
+
+        /* Lista de Items */
+        .order-list { margin-bottom: 20px; }
+        .order-row { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .order-item-title { font-size: 14px; font-weight: 600; display: block; margin-bottom: 4px; }
+        .order-item-sub { font-size: 11px; color: var(--text-gray); display: block; max-width: 200px; line-height: 1.4; }
+        .order-price { font-weight: 700; font-size: 14px; }
+
+        /* Tabla de Costos */
+        .cost-table { width: 100%; margin-top: 20px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 20px; }
+        .cost-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; color: #ccc; }
+        .cost-row.total { font-size: 20px; font-weight: 800; color: white; margin-top: 15px; align-items: flex-end; }
+        .total-amount { color: var(--primary); }
+
+        /* Footer de Pago */
+        .payment-footer { margin-top: auto; padding-top: 30px; }
+        .secure-badge { 
+            display: flex; align-items: center; justify-content: center; gap: 6px; 
+            font-size: 10px; color: #666; margin-bottom: 15px; text-align: center;
+        }
+        .payment-method {
+            display: flex; align-items: center; justify-content: space-between;
+            background: #222; padding: 15px; border-radius: 12px; margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card-info { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+        
+        .btn-pay {
+            background: var(--primary); color: white; border: none;
+            width: 100%; padding: 18px; border-radius: 16px;
+            font-size: 16px; font-weight: 800; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(238, 108, 43, 0.3);
+        }
+
+
+        /***************************************************************/
+
+        /*SIMULADOR**************************************************************/
+
+        /* --- MODO PRESENTACIÓN (TRUCO AUTO-MOBILE) --- */
+        
+        /* Solo se activa si la pantalla es más ancha que un celular (PC/Tablet) */
+        @media (min-width: 500px) {
+            body {
+                background-color: #222; /* Fondo oscuro de escritorio */
+                background-image: radial-gradient(#333 1px, transparent 1px);
+                background-size: 20px 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 40px 0;
+            }
+
+            #app-container {
+                /* Forzamos el tamaño de un iPhone Pro Max */
+                width: 430px; 
+                height: 932px; 
+                
+                /* Marco del teléfono */
+                border: 12px solid #000;
+                border-radius: 50px;
+                box-shadow: 0 0 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.5);
+                overflow: hidden; /* Cortar lo que salga del borde */
+                position: relative;
+                background: #121212;
+            }
+
+            /* Corrección crítica: Los elementos 'fixed' deben volverse 'absolute' 
+               para quedarse dentro del teléfono y no pegarse a la pantalla del PC */
+            
+            #splash-screen, 
+            .top-header, 
+            .bottom-nav, 
+            .sticky-footer,
+            .profile-video-container div[style*="fixed"] {
+                position: absolute !important;
+                width: 100% !important;
+                /* El splash debe tapar todo el "telefono", no la pantalla del PC */
+            }
+            
+            #splash-screen { border-radius: 38px; } /* Ajuste bordes splash */
+
+            .restaurant-card {
+                /* Puedes subirlo o bajarlo a gusto aquí sin afectar al celular real */
+                bottom: 220px !important; 
+            }
+
+            .right-sidebar {
+                /* Lo mismo para los íconos: ajusta para mantener la distancia */
+                bottom: 360px !important; 
+            }
+
+        }
+
+        /***************************************************************/
+
+
+
+
+
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <div class="splash-logo">Gustom<span>.</span></div>
+    </div>
+
+    <div id="app-container">
+
+        <div class="top-header">
+            <div class="icon-btn btn-active" style="opacity:0;"></div>
+            <div class="location-badge">
+                <span class="material-symbols-rounded" style="font-size: 18px;">location_on</span>
+                AREQUIPA, PERÚ
+            </div>
+            <div class="icon-btn btn-active">
+                <span class="material-symbols-rounded">notifications</span>
+            </div>
+        </div>
+
+        <div class="feed-scroll" id="feed-root">
+            </div>
+
+        <div id="explore-screen" style="display: none;">
+            <div class="map-background">
+                <div class="map-marker" style="top:30%; left:20%;">S/ 55</div>
+                <div class="map-marker active" style="top:45%; left:50%;">S/ 80</div>
+                <div class="map-marker" style="top:25%; left:75%;">S/ 88</div>
+                <div style="position:absolute; top:55%; left:48%; width:20px; height:20px; background:rgba(238, 108, 43, 0.3); border-radius:50%; display:flex; justify-content:center; align-items:center;">
+                    <div style="width:10px; height:10px; background:var(--primary); border:2px solid white; border-radius:50%;"></div>
+                </div>
+            </div>
+
+            <div class="explore-header">
+                <div class="search-bar">
+                    <span class="material-symbols-rounded" style="color:#888;">search</span>
+                    <input type="text" placeholder="Buscar restaurantes, cafeterías..." readonly>
+                    <span class="material-symbols-rounded" style="color:#888;">tune</span>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-chip active">
+                        <span class="material-symbols-rounded" style="font-size:16px;">wifi</span>
+                        Cerca de mí
+                    </div>
+                    <div class="filter-chip">Vegetariano</div>
+                    <div class="filter-chip">Picanterías</div>
+                </div>
+            </div>
+
+            <div class="bottom-sheet">
+                <div class="drag-handle"></div>
+                <div class="sheet-header">
+                    <span class="sheet-title">Explorar</span>
+                    <span style="font-size:12px; color:var(--text-gray);">Ver todo (12)</span>
+                </div>
+                <div class="sheet-list" id="explore-list-container">
+                    </div>
+            </div>
+        </div>
+
+        <div id="wallet-screen" style="display: none;">
+            <div class="wallet-header">
+                <div class="wallet-title">Mis Tickets</div>
+                <div style="width:30px; height:30px; background:#333; border-radius:50%;"></div>
+            </div>
+
+            <div class="balance-card">
+                <div class="balance-label">SALDO DISPONIBLE</div>
+                <div class="balance-amount">S/ 15.00</div>
+                <div class="balance-note">*Cashback acumulado</div>
+            </div>
+
+            <div class="section-title">TICKETS ACTIVOS</div>
+            <div class="active-ticket-card">
+                <div class="status-badge">
+                    <span class="material-symbols-rounded" style="font-size:14px;">circle</span>
+                    CONFIRMADO
+                </div>
+                <div>
+                    <div class="ticket-rest-name">El Fuego de mi Abuela</div>
+                    <div class="ticket-date">Mesa para 2 • 16 Ene, 1:00 PM</div>
+                </div>
+                <div class="btn-qr btn-active" onclick="openQR()">
+                    <span class="material-symbols-rounded">qr_code_2</span>
+                    Ver Ticket QR
+                </div>
+            </div>
+
+            <div class="section-title" style="margin-top: 20px;">HISTORIAL DE VISITAS</div>
+            
+            <div class="history-item">
+                <div class="history-info">
+                    <h4>La Picantita</h4>
+                    <p>28 Dic 2025 • Pack Tradicional</p>
+                </div>
+                <div class="history-action">
+                    <span class="history-price">S/ 95.00</span>
+                    <a class="btn-repeat">Repetir</a>
+                </div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-info">
+                    <h4>Rooftop Bar</h4>
+                    <p>06 Nov 2025 • Cata de Antaño</p>
+                </div>
+                <div class="history-action">
+                    <span class="history-price">S/ 110.00</span>
+                    <a class="btn-repeat">Repetir</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="qr-screen">
+            <div class="qr-header">
+                <div class="btn-back btn-active" onclick="closeQR()">
+                    <span class="material-symbols-rounded">arrow_back</span>
+                </div>
+                <span style="font-weight: 600;">Mi Ticket</span>
+            </div>
+
+            <div class="golden-ticket">
+                <div class="ticket-top">
+                    <h2 style="margin:0 0 5px; font-size: 22px;">El Fuego de mi Abuela</h2>
+                    <p style="margin:0; color:#666; font-size:13px;">Restaurante Tradicional</p>
+                    
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Gustom-Reserva-123456" class="qr-image" alt="QR" style="margin-top: 30px;">
+                    <div class="code-text">JD8-AIA-LD8</div>
+                </div>
+                <div class="ticket-bottom">
+                    <div class="ticket-grid">
+                        <div class="ticket-field">
+                            <label>Fecha y Hora</label>
+                            <div>16/01/2026<br>01:00 p.m.</div>
+                        </div>
+                        <div class="ticket-field">
+                            <label>Reserva</label>
+                            <div>Mesa para 2<br>Zona Terraza</div>
+                        </div>
+                        <div class="ticket-field" style="grid-column: span 2; margin-top: 10px;">
+                            <label>Ubicación</label>
+                            <div>Jr. Salaverry 860 - Yanahuara</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        /*PERFIL RESTAURANTE**************************************************************/
+
+        <div id="profile-screen">
+            
+            <div style="position:absolute; top:50px; left:20px; z-index:100;">
+                <div class="btn-back btn-active" onclick="closeProfile()" style="background:rgba(0,0,0,0.6); backdrop-filter:blur(5px);">
+                    <span class="material-symbols-rounded">arrow_back</span>
+                </div>
+            </div>
+
+            <div class="profile-scroll-content">
+                <div class="profile-video-container">
+                    <video id="prof-hero-video" autoplay muted loop playsinline></video>
+                    <div class="hero-gradient"></div>
+                </div>
+
+                <div class="profile-hero">
+                    <div class="profile-title">
+                        <span id="prof-name">Nombre Restaurante</span>
+                        <div class="rating-pill">★ <span id="prof-rate">4.1</span></div>
+                    </div>
+                    
+                    <div class="tags-row">
+                        <div class="tag-capsule tag-orange" id="prof-cat">TRADICIONAL</div>
+                        <div class="tag-capsule tag-grey">
+                            <span class="material-symbols-rounded" style="font-size:14px;">location_on</span>
+                            <span id="prof-loc">Yanahuara</span>
+                        </div>
+                    </div>
+
+                    <div class="social-proof">
+                        <span class="material-symbols-rounded" style="font-size:16px;">verified_user</span>
+                        Visitado por 51 embajadores gastronómicos
+                    </div>
+
+                    <div class="meta-details">$$ • Abierto • Estacionamiento disponible</div>
+
+                    <div class="profile-desc" id="prof-desc">
+                        Descripción del lugar...
+                    </div>
+
+                    <div class="time-selector">
+                        <div class="time-chip active">01:00 p.m.</div>
+                        <div class="time-chip">01:30 p.m.</div>
+                        <div class="time-chip">02:00 p.m.</div>
+                        <div class="time-chip disabled">02:30 p.m.</div>
+                        <div class="time-chip">03:00 p.m.</div>
+                        <div class="time-chip">03:30 p.m.</div>
+                    </div>
+
+                    <div class="section-header">
+                        <span class="section-h2">Experiencias</span>
+                        <span class="link-see-all">Ver todo</span>
+                    </div>
+                    <div class="experience-carousel">
+                        <div class="exp-card">
+                            <img src="https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/pack_cena_romantica.png" class="exp-img">
+                            <div class="exp-overlay">
+                                <div class="exp-title">Mesa Romántica</div>
+                                <div class="exp-price">S/ 120.00</div>
+                            </div>
+                        </div>
+                        <div class="exp-card">
+                            <img src="https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/pack_cata_vinos.png" class="exp-img">
+                            <div class="exp-overlay">
+                                <div class="exp-title">Cata de Vinos</div>
+                                <div class="exp-price">S/ 180.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-header">
+                        <span class="section-h2">Carta</span>
+                        <span class="link-see-all">Ver todo</span>
+                    </div>
+                    <div class="menu-grid">
+                        <div class="menu-item">
+                            <div class="menu-thumb">
+                                <img src="https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/rocoto_relleno.png" class="menu-img">
+                                <div class="price-tag">S/ 45</div>
+                            </div>
+                            <span class="menu-name">Rocoto Relleno</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-thumb">
+                                <img src="https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/chupe_camarones.png" class="menu-img">
+                                <div class="price-tag">S/ 55</div>
+                            </div>
+                            <span class="menu-name">Chupe Camarones</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-thumb">
+                                <img src="https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/soltero_queso.png" class="menu-img">
+                                <div class="price-tag">S/ 38</div>
+                            </div>
+                            <span class="menu-name">Soltero Queso</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-thumb">
+                                <img src="https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/malaya_dorada.png" class="menu-img">
+                                <div class="price-tag">S/ 60</div>
+                            </div>
+                            <span class="menu-name">Malaya Dorada</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-thumb">
+                                <img src="https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/queso_helado.png" class="menu-img">
+                                <div class="price-tag">S/ 15</div>
+                            </div>
+                            <span class="menu-name">Queso Helado</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-thumb">
+                                <img src="https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/ensalada_casa.png" class="menu-img">
+                                <div class="price-tag">S/ 25</div>
+                            </div>
+                            <span class="menu-name">Ensalada de la Casa</span>
+                        </div>
+                    </div>
+                </div>
+            </div> <div class="sticky-footer">
+                <button class="btn-reserve btn-active" onclick="goToCheckout()">
+                    <span class="material-symbols-rounded">confirmation_number</span>
+                    Reservar Mesa
+                </button>
+            </div>
+
+        </div>
+
+        /***************************************************************/
+
+        /*CHECKOUT**************************************************************/
+
+        <div id="checkout-screen">
+            <div class="checkout-header">
+                <div class="btn-back btn-active" onclick="closeCheckout()">
+                    <span class="material-symbols-rounded">arrow_back</span>
+                </div>
+                <div class="checkout-title">CHECKOUT</div>
+                <div></div>
+            </div>
+
+            <div class="checkout-rest-info">
+                <img src="https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/el_fuego_de_mi_abuela.png" class="checkout-thumb">
+                <div class="checkout-details">
+                    <h3>El Fuego de mi Abuela</h3>
+                    <p>Mesa para 2 • 16/01/2026 01:00 p.m.</p>
+                </div>
+            </div>
+
+            <div class="section-title">DETALLE DE ORDEN</div>
+            <div class="order-list">
+                <div class="order-row">
+                    <div>
+                        <span class="order-item-title">Reserva</span>
+                        <span class="order-item-sub">Mesa para 2 personas<br>*Consumo mínimo de S/ 100 soles, reserva al 50%.</span>
+                    </div>
+                    <span class="order-price">S/ 50.00</span>
+                </div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-item-title">Adicionales</span>
+                        <span class="order-item-sub">Vino borgoña arequipeño</span>
+                    </div>
+                    <span class="order-price">S/ 45.00</span>
+                </div>
+            </div>
+
+            <div class="cost-table">
+                <div class="cost-row">
+                    <span>Subtotal</span>
+                    <span>S/ 95.00</span>
+                </div>
+                <div class="cost-row">
+                    <span>Service fee</span>
+                    <span>S/ 08.07</span>
+                </div>
+                <div class="cost-row total">
+                    <span>TOTAL</span>
+                    <span class="total-amount">S/ 103.07</span>
+                </div>
+            </div>
+
+            <div class="payment-footer">
+                <div class="secure-badge">
+                    <span class="material-symbols-rounded" style="font-size:14px;">lock</span>
+                    Transacción Segura. Encriptación SSL de 256-bits.
+                </div>
+                
+                <div class="payment-method">
+                    <div class="card-info">
+                        <span class="material-symbols-rounded" style="color: var(--primary);">credit_card</span>
+                        •••• 4242
+                    </div>
+                    <span class="material-symbols-rounded" style="color:#666;">chevron_right</span>
+                </div>
+
+                <button class="btn-pay btn-active" onclick="processPayment()">
+                    Pagar S/ 103.07
+                </button>
+            </div>
+        </div>
+
+
+        /***************************************************************/
+
+        <div class="bottom-nav">
+            <div class="nav-item active btn-active" onclick="switchTab('home')">
+                <span class="material-symbols-rounded">home</span>
+                <span>Home</span>
+            </div>
+            
+            <div class="nav-item btn-active" onclick="switchTab('explore')">
+                <span class="material-symbols-rounded">search</span>
+                <span>Explorar</span>
+            </div>
+            
+            <div class="nav-fab-container" onclick="switchTab('tickets')"> 
+                <div class="nav-fab">
+                    <span class="material-symbols-rounded" style="font-size: 28px; transform: rotate(-10deg);">confirmation_number</span>
+                </div>
+                <span class="nav-fab-label">Tickets</span>
+            </div>
+
+            <div class="nav-item btn-active">
+                <span class="material-symbols-rounded">book_4</span>
+                <span>Pasaporte</span>
+            </div>
+            <div class="nav-item btn-active">
+                <span class="material-symbols-rounded">person</span>
+                <span>Perfil</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATOS ---
+        const DATA = [
+            {
+                id: 1, name: "El Fuego de mi Abuela", price: "$$", cat: "Restaurante tradicional",
+                rate: "4.1", count: "(251)", desc: "Desde 1967, continuamos con la tradición de Martha...",
+                likes: "3.5K", saves: "860",
+                video: "https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/video_food_1.mp4"
+            },
+            {
+                id: 2, name: "La Benita", price: "$$", cat: "Picantería",
+                rate: "4.6", count: "(600)", desc: "Guardianas de la tradición. El mejor rocoto relleno...",
+                likes: "4.2K", saves: "1.2K",
+                video: "https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/video_food_2.mp4"
+            }
+        ];
+
+        // MOCK DATA
+        for(let i=0; i<5; i++){
+            DATA.push({
+                id: i+3, name: "Restaurante Local " + (i+1), price: "$$$", cat: "Fusión", rate: "4.5", count: "(100)",
+                desc: "Experiencia culinaria única.", likes: "1K", saves: "200",
+                video: "https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/video_food_3.mp4"
+            });
+        }
+
+        // --- INIT ---
+        function init() {
+            // Splash Logic
+            setTimeout(() => {
+                const s = document.getElementById('splash-screen');
+                s.style.opacity = '0';
+                setTimeout(() => { s.style.display='none'; document.getElementById('app-container').style.display='block'; playVisible(); }, 500);
+            }, 2000);
+
+            // Render Feed
+            const root = document.getElementById('feed-root');
+            DATA.forEach(d => {
+                const html = `
+                    <div class="feed-item">
+                        <video class="video-player" loop muted playsinline poster="https://via.placeholder.com/400x800/121212/333333?text=Loading">
+                            <source src="${d.video}" type="video/mp4">
+                        </video>
+                        <div class="gradient-overlay"></div>
+                        <div class="right-sidebar">
+                            <div class="action-group btn-active" onclick="toggleLike(this)">
+                                <span class="material-symbols-rounded">favorite</span><span class="action-label">${d.likes}</span>
+                            </div>
+                            <div class="action-group btn-active" onclick="toggleSave(this)">
+                                <span class="material-symbols-rounded">bookmark</span><span class="action-label">${d.saves}</span>
+                            </div>
+                            
+                        </div>
+                        <div class="restaurant-card btn-active" onclick="openProfile('${d.name}', '${d.desc.substring(0,50)}...', '${d.rate}', '${d.cat}', '${d.video}')">
+                            
+                            <div class="card-header"><div class="title-row"><span class="rest-name">${d.name}</span><span class="material-symbols-rounded verified-badge">verified</span></div></div>
+                            <div class="meta-row"><span style="color:#FFF;">${d.price}</span> • <span>${d.cat}</span> • <span style="color:#FFF;">★ ${d.rate}</span> <span>${d.count}</span></div>
+                            <div class="description-text">${d.desc} <span class="see-more">ver más.</span></div>
+                            <div class="chevron-circle"><span class="material-symbols-rounded">chevron_right</span></div>
+                        </div>
+                    </div>`;
+                root.insertAdjacentHTML('beforeend', html);
+            });
+
+            // Observer Video Autoplay
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    const v = e.target.querySelector('video');
+                    if(e.isIntersecting) v.play(); else { v.pause(); v.currentTime = 0; }
+                });
+            }, { threshold: 0.6 });
+            document.querySelectorAll('.feed-item').forEach(el => observer.observe(el));
+
+            // Activar el arrastre con mouse
+            enableDragScroll();
+
+
+        }
+
+        // --- NAVEGACIÓN ---
+        window.switchTab = function(tabName) {
+            const homeFeed = document.getElementById('feed-root');
+            const homeHeader = document.querySelector('.top-header');
+            const exploreScreen = document.getElementById('explore-screen');
+            const walletScreen = document.getElementById('wallet-screen');
+            
+            // Ocultar todo
+            homeFeed.style.display = 'none';
+            homeHeader.style.display = 'none';
+            exploreScreen.style.display = 'none';
+            walletScreen.style.display = 'none';
+            document.querySelectorAll('video').forEach(v => v.pause());
+
+            // Mostrar selección
+            if(tabName === 'home') {
+                homeFeed.style.display = 'block'; homeHeader.style.display = 'grid';
+                playVisible(); updateNavIcons(0);
+            } 
+            else if(tabName === 'explore') {
+                exploreScreen.style.display = 'block'; renderExploreList(); updateNavIcons(1);
+            }
+            else if(tabName === 'tickets') {
+                walletScreen.style.display = 'block'; updateNavIcons(-1);
+            }
+        }
+
+        function updateNavIcons(idx) {
+            document.querySelectorAll('.bottom-nav .nav-item').forEach((item, i) => {
+                const icon = item.querySelector('.material-symbols-rounded');
+                if(i === idx) { item.classList.add('active'); icon.style.fontVariationSettings = "'FILL' 1"; }
+                else { item.classList.remove('active'); icon.style.fontVariationSettings = "'FILL' 0"; }
+            });
+        }
+
+        function renderExploreList() {
+            const c = document.getElementById('explore-list-container');
+            if(c.innerHTML.trim() !== "") return;
+            DATA.forEach(d => {
+                c.insertAdjacentHTML('beforeend', `
+                    <div class="list-item" onclick="openProfile('${d.name}', '${d.desc}', '${d.rate}', '${d.cat}','${d.video}')">
+                        <video class="list-thumb" muted loop style="object-fit:cover;"><source src="${d.video}" type="video/mp4"></video>
+                        <div class="list-info">
+                            <div style="font-weight:700; margin-bottom:4px;">${d.name}</div>
+                            <div style="font-size:12px; color:#AAA; margin-bottom:4px;">${d.cat} • ${d.price}</div>
+                            <div style="font-size:12px; display:flex; gap:10px;"><span style="color:#FFF;">★ ${d.rate}</span><span style="color:var(--primary);">Abierto</span></div>
+                        </div>
+                        <div style="display:flex; align-items:center;"><span class="material-symbols-rounded" style="color:#666;">chevron_right</span></div>
+                    </div>`);
+            });
+        }
+
+        // --- UTILS ---
+        function playVisible() { const v = document.querySelector('video'); if(v) v.play(); }
+        window.toggleLike = function(el) { el.querySelector('.material-symbols-rounded').classList.toggle('icon-fill-active'); }
+        window.toggleSave = function(el) { el.querySelector('.material-symbols-rounded').classList.toggle('icon-fill-active'); }
+        window.openQR = function() { document.getElementById('qr-screen').style.display = 'flex'; }
+        window.closeQR = function() { document.getElementById('qr-screen').style.display = 'none'; }
+
+        /*PERFIL RESTAURANTE**************************************************************/
+
+        // --- LÓGICA DE PERFIL ---
+
+        // Abrir Perfil con datos dinámicos
+        // Abrir Perfil (CORREGIDO PARA SCROLL)
+        window.openProfile = function(name, desc, rate, cat, videoUrl) {
+            
+            // 1. Llenar los textos
+            document.getElementById('prof-name').innerText = name || "Restaurante";
+            document.getElementById('prof-desc').innerText = desc || "Descripción...";
+            document.getElementById('prof-rate').innerText = rate || "4.5";
+            document.getElementById('prof-cat').innerText = cat ? cat.toUpperCase() : "RESTAURANTE";
+            
+            // 2. Conectar el Video
+            const videoEl = document.getElementById('prof-hero-video'); 
+            if(videoUrl) {
+                videoEl.src = videoUrl; 
+                videoEl.play();         
+            }
+
+            // 3. Mostrar la pantalla
+            const screen = document.getElementById('profile-screen');
+            
+            // 👇 AQUÍ ESTABA EL ERROR: Usar 'flex' en lugar de 'block'
+            screen.style.display = 'flex'; 
+            
+            // Resetear el scroll del contenido interno, no de la pantalla completa
+            document.querySelector('.profile-scroll-content').scrollTop = 0; 
+            
+            document.querySelector('.bottom-nav').style.display = 'none';
+        }
+
+        window.closeProfile = function() {
+            document.getElementById('profile-screen').style.display = 'none';
+            // Volver a mostrar nav bar
+            document.querySelector('.bottom-nav').style.display = 'flex';
+        }
+
+        window.openCheckout = function() {
+            document.getElementById('checkout-screen').style.display = 'flex';
+        }
+
+        window.closeCheckout = function() {
+            document.getElementById('checkout-screen').style.display = 'none';
+        }
+
+        window.processPayment = function() {
+            const btn = document.querySelector('.btn-pay');
+            const originalText = btn.innerText;
+            
+            // Estado de carga
+            btn.innerText = "Procesando...";
+            btn.style.opacity = "0.7";
+            
+            setTimeout(() => {
+                btn.innerText = "¡Pago Exitoso!";
+                btn.style.backgroundColor = "#4CAF50"; // Verde
+                
+                setTimeout(() => {
+                    // Cerrar todo y volver a Tickets
+                    closeCheckout();
+                    closeProfile();
+                    switchTab('tickets'); 
+                    
+                    // Resetear botón
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = ""; 
+                    btn.style.opacity = "1";
+                }, 1500);
+            }, 2000);
+        }
+
+        // 2. Definir la función principal que llama el botón
+        window.goToCheckout = function() {
+            openCheckout(); // Ahora sí funciona al primer click
+        }
+
+        /***************************************************************/
+
+        // --- TRUCO: ARRASTRAR CON MOUSE (DRAG TO SCROLL) ---
+        // Esto permite mover los carruseles con el mouse como si fuera un dedo
+        function enableDragScroll() {
+            // Seleccionamos todos los elementos que deben moverse horizontalmente
+            const sliders = document.querySelectorAll('.time-selector, .experience-carousel, .filter-row');
+            
+            sliders.forEach(slider => {
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+
+                // Al hacer clic
+                slider.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    slider.style.cursor = 'grabbing'; // Cambia el cursor a "agarrando"
+                    startX = e.pageX - slider.offsetLeft;
+                    scrollLeft = slider.scrollLeft;
+                });
+
+                // Al soltar o salir
+                slider.addEventListener('mouseleave', () => {
+                    isDown = false;
+                    slider.style.cursor = 'grab';
+                });
+                slider.addEventListener('mouseup', () => {
+                    isDown = false;
+                    slider.style.cursor = 'grab';
+                });
+
+                // Al mover el mouse
+                slider.addEventListener('mousemove', (e) => {
+                    if(!isDown) return; // Si no está clicando, no hace nada
+                    e.preventDefault(); // Evita seleccionar texto
+                    const x = e.pageX - slider.offsetLeft;
+                    const walk = (x - startX) * 2; // Velocidad del desplazamiento (* 2 es más rápido)
+                    slider.scrollLeft = scrollLeft - walk;
+                });
+                
+                // Cursor inicial
+                slider.style.cursor = 'grab';
+            });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
