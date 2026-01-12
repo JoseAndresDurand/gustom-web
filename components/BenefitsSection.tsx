@@ -6,7 +6,7 @@ const benefits = [
         subtitle: "Durante los primeros 6 meses de operación.",
     },
     {
-        title: "Filmanciones Profesionales Gratis",
+        title: "Filmaciones Profesionales Gratis",
         subtitle: "Sesión de video 4K para tus mejores 5 platos.",
     },
     {
