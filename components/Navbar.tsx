@@ -15,7 +15,9 @@ export const Navbar: React.FC = () => {
           <a className="text-sm font-medium text-gray-400 hover:text-primary transition-colors" href="#problema">Problema</a>
           <a className="text-sm font-medium text-gray-400 hover:text-primary transition-colors" href="#solucion">Solución</a>
           <a className="text-sm font-medium text-gray-400 hover:text-primary transition-colors" href="#beneficios">Beneficios</a>
-          <button className="rounded bg-primary px-5 py-2 text-sm font-bold text-background-dark transition-transform hover:scale-105 shadow-lg shadow-primary/20">
+          <button 
+            onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
+            className="rounded bg-primary px-5 py-2 text-sm font-bold text-background-dark transition-transform hover:scale-105 shadow-lg shadow-primary/20">
             Acceso Anticipado
           </button>
         </nav>
