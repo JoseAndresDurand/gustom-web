@@ -18,7 +18,7 @@ const solutions = [
     category: 'Conversión Directa',
     title: 'Venta de Tickets Exclusivos',
     description: 'No más reservas vacías. Vende accesos a menús degustación, eventos especiales o preventas directamente desde la plataforma sin intermediarios tradicionales.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCit5JWoPfTcWdF824a1i-6DheTsHxC2qJiNtdrD0x96wIFI1a99HcI5EVqUr-uKoVWerVKvJ_3VUhDiqsjmaNswHaGerHt7a2iWYGZ4suYuVfu2PLQDm1Wv3r1zHEtgYy5Vt-ZAIkiyp3IpcmMNDM_P8ArKS19bZQMR0EOGWIkysgvnIqwwSdUD1HkRDUvf-znFh7QTlZKKS_zTJpxzIkKproiR32NnvrsvrkQqsUF7yZFALpDdIqWbyp1plKTCCIaaIr18yNorY1B',
+    image: 'https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/solution_2.png',
     reverse: true
   },
   {
