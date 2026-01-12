@@ -46,7 +46,7 @@ export const Hero: React.FC = () => {
                     <div 
                         className="relative h-full w-full bg-cover bg-center" 
                         style={{
-                            backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAhy5ry_V-8m14p6oJNd99a3Uis43yNQmAVDpYnfFeDr9FhSCRb6CW0f4ujrOU9a_uxf6b2yCUXz2yWBWkoFqg3yPlkcY6CWXjgbfAypPn-6XT0jdyr-lU4wz9SRWNgOt-I2EpZb0YAzgvJiz5G9H4AD6BfXyAViAXgy9Nz78J6wVjqeoxKqctlm1z9eDnrtNEEzy0JW7Fuvek_l5PujvA3V_VEbaQrAOrPEughYOIAdhEFSr7fT1Qt3vAwitZv0rO2oeMbkVlSiArG')"
+                            backgroundImage: "url('https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/hero_mockup_1.png')"
                         }}
                     >
                         {/* Overlay Gradient */}
