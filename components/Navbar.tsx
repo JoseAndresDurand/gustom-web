@@ -7,7 +7,7 @@ export const Navbar: React.FC = () => {
         
         {/* LOGO GUSTOM CON PUNTO NARANJA */}
         <a href="#" className="flex items-center gap-1 group">
-          <h2 className="text-2xl font-black tracking-tighter uppercase text-white transition-colors group-hover:text-gray-200">
+          <h2 className="text-2xl font-black tracking-tighter text-white transition-colors group-hover:text-gray-200">
             Gustom<span className="text-primary text-4xl leading-[0] mb-2 inline-block">.</span>
           </h2>
         </a>
