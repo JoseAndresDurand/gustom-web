@@ -26,7 +26,11 @@ export const Hero: React.FC = () => {
             <button className="flex items-center justify-center rounded bg-primary px-8 py-4 text-base font-black text-background-dark shadow-[0_0_20px_rgba(244,157,37,0.3)] transition-all hover:bg-primary/90 hover:shadow-[0_0_30px_rgba(244,157,37,0.5)] hover:-translate-y-1">
               Solicitar Acceso Anticipado
             </button>
-            <button className="flex items-center justify-center gap-2 rounded border border-white/10 bg-white/5 px-8 py-4 text-base font-bold text-white transition-all hover:bg-white/10 hover:border-white/20">
+            {/* Botón Ver Demo MODIFICADO */}
+            <button 
+              onClick={() => window.location.href = '/mvp/index.html'}
+              className="flex items-center justify-center gap-2 rounded border border-white/10 bg-white/5 px-8 py-4 text-base font-bold text-white transition-all hover:bg-white/10 hover:border-white/20"
+            >
               <span className="material-symbols-outlined fill-1">play_circle</span>
               Ver Demo
             </button>
@@ -49,24 +53,7 @@ export const Hero: React.FC = () => {
                             backgroundImage: "url('https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/hero_mockup_1.png')"
                         }}
                     >
-                        {/* Overlay Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
                         
-                        {/**/}
-                        
-                        <div className="absolute bottom-6 right-4 flex flex-col gap-6 items-center pb-2">
-                            <div className="flex flex-col items-center gap-1">
-                                <span className="material-symbols-outlined text-white text-3xl drop-shadow-md cursor-pointer hover:scale-110 transition-transform fill-1">favorite</span>
-                                <span className="text-[10px] text-white font-bold">1.2k</span>
-                            </div>
-                            <div className="flex flex-col items-center gap-1">
-                                <span className="material-symbols-outlined text-white text-3xl drop-shadow-md cursor-pointer hover:scale-110 transition-transform">share</span>
-                                <span className="text-[10px] text-white font-bold">450</span>
-                            </div>
-                            <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/40 cursor-pointer hover:scale-110 transition-transform">
-                                <span className="material-symbols-outlined text-background-dark font-bold">confirmation_number</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
