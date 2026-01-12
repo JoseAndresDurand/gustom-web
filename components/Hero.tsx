@@ -52,18 +52,7 @@ export const Hero: React.FC = () => {
                         {/* Overlay Gradient */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
                         
-                        {/* UI Elements on Phone */}
-                        <div className="absolute bottom-6 left-4 right-4 flex flex-col gap-2">
-                            <div className="flex items-center gap-2 mb-1">
-                                <div className="h-8 w-8 rounded-full border border-primary bg-primary/20 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-xs text-primary">restaurant</span>
-                                </div>
-                                <span className="text-sm font-bold text-white shadow-black drop-shadow-md">La Capitana</span>
-                            </div>
-                            <p className="text-xs text-white/90 line-clamp-2 drop-shadow-md">
-                                La mejor burger ahumada de Arequipa 🌋. #FoodPorn #Arequipa #Burger
-                            </p>
-                        </div>
+                        {/**/}
                         
                         <div className="absolute bottom-6 right-4 flex flex-col gap-6 items-center pb-2">
                             <div className="flex flex-col items-center gap-1">
