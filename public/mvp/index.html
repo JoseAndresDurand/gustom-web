@@ -393,56 +393,51 @@
 
         /* --- MODO PRESENTACIÓN (TRUCO AUTO-MOBILE) --- */
         
-        /* Solo se activa si la pantalla es más ancha que un celular (PC/Tablet) */
-        /* --- MODO PRESENTACIÓN (RESPONSIVE TOTAL) --- */
-        /* Solo se activa si la pantalla es más ancha que un celular (PC/Tablet) */
+        /* --- MODO PRESENTACIÓN (CORREGIDO) --- */
         @media (min-width: 500px) {
+            
+            /* 1. RESETEO TOTAL DEL BODY */
             body {
-                background-color: #222; 
+                background-color: #222;
                 background-image: radial-gradient(#333 1px, transparent 1px);
                 background-size: 20px 20px;
-                /* Quitamos flex para usar posicionamiento absoluto preciso */
-                display: block; 
+                
+                /* IMPORTANTISIMO: Quitar Flexbox y Padding antiguos */
+                display: block !important; 
+                padding: 0 !important;
+                margin: 0 !important;
                 height: 100vh;
                 width: 100vw;
-                overflow: hidden; /* Evita barras de scroll dobles */
-                margin: 0;
-                padding: 0;
+                overflow: hidden; /* Adiós scrollbars dobles */
+                position: relative;
             }
 
+            /* 2. CENTRADO MATEMÁTICO DEL CELULAR */
             #app-container {
-                /* 1. Definimos las dimensiones REALES del diseño (iPhone Pro Max) */
+                /* Dimensiones originales del diseño */
                 width: 430px; 
                 height: 932px; 
                 
-                /* 2. Posicionamiento Absoluto al Centro */
+                /* Centrado Absoluto */
                 position: absolute;
                 top: 50%;
                 left: 50%;
-
-                /* 3. LA MAGIA: Escalado Automático 
-                   - translate(-50%, -50%): Centra el elemento perfectamente.
-                   - scale(...): Calcula si la pantalla es más pequeña que el celular.
-                     Si la altura de la ventana (95vh) es menor a 932px, reduce el celular.
-                     'min(1, ...)' asegura que nunca se haga más grande que el original.
-                */
-                transform: translate(-50%, -50%) scale(min(1, calc(95vh / 932)));
                 
-                /* Estilos del Marco */
-                border: 12px solid #1a1a1a; /* Marco un poco más gris para realismo */
+                /* Esto coloca el centro del celular en el centro de la pantalla
+                   y lo escala si no cabe */
+                transform: translate(-50%, -50%) scale(min(1, calc(90vh / 932)));
+                
+                /* Estilos visuales */
+                border: 12px solid #1a1a1a;
                 border-radius: 55px;
-                box-shadow: 
-                    0 0 0 2px #333, /* Borde exterior sutil */
-                    0 20px 50px rgba(0,0,0,0.7), /* Sombra profunda */
-                    inset 0 0 20px rgba(0,0,0,0.5); /* Sombra interior */
-                
-                overflow: hidden; 
+                box-shadow: 0 20px 50px rgba(0,0,0,0.7);
                 background: #121212;
+                overflow: hidden; 
                 transform-origin: center center;
-                transition: transform 0.1s ease-out; /* Suaviza el redimensionamiento */
             }
 
-            /* 4. Corrección de elementos fijos para que se queden DENTRO del celular */
+            /* 3. FORZAR ELEMENTOS FIJOS DENTRO DEL CELULAR */
+            /* Esto evita que el header o footer se peguen a la pantalla de la PC */
             #splash-screen, 
             .top-header, 
             .bottom-nav, 
@@ -450,18 +445,16 @@
             .profile-video-container div[style*="fixed"] {
                 position: absolute !important;
                 width: 100% !important;
-                max-width: 100%;
                 left: 0 !important;
+                max-width: 100%;
             }
             
+            /* Ajustes finos de posición */
             #splash-screen { border-radius: 40px; } 
-
-            /* Ajustes finos de posición para escritorio */
             .restaurant-card { bottom: 220px !important; }
             .right-sidebar { bottom: 360px !important; }
             .bottom-sheet { bottom: 90px !important; }
         }
-
         /***************************************************************/
 
 
