@@ -8,7 +8,7 @@ export const Footer: React.FC = () => {
         {/* LOGO FOOTER */}
           <div className="flex items-center gap-1 mb-4">
             <h2 className="text-2xl font-black tracking-tighter text-white">
-              Gustom <span className="text-primary text-4xl leading-[0] mb-2 inline-block">.</span>
+              Gustom<span className="text-primary text-4xl leading-[0] mb-2 inline-block">.</span>
             </h2>
           </div>
         
