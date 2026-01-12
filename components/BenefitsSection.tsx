@@ -46,12 +46,14 @@ export const BenefitsSection: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col items-center">
-                    <button className="w-full md:w-auto px-12 py-5 rounded-lg bg-primary text-background-dark font-black text-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(244,157,37,0.4)]">
+                    <button 
+                        onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
+                        className="w-full md:w-auto px-12 py-5 rounded-lg bg-primary text-background-dark font-black text-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(244,157,37,0.4)]">
                         ¡Quiero ser Fundador!
                     </button>
                     <p className="mt-6 text-xs text-primary/80 font-bold uppercase tracking-widest flex items-center gap-2">
                         <span className="h-2 w-2 rounded-full bg-primary animate-pulse"></span>
-                        Quedan 8 cupos disponibles para Arequipa
+                        Quedan 11 cupos disponibles para Arequipa
                     </p>
                 </div>
             </div>

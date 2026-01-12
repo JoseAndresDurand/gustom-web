@@ -26,7 +26,7 @@ const solutions = [
     category: 'Lealtad',
     title: 'Pasaporte de Fidelización',
     description: 'Crea una comunidad de fans reales. Gamifica la experiencia de tus clientes con un pasaporte digital que premia cada visita y los motiva a volver.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCcZuMcIsnxfs9lGAsWNb_9V89Y2OCuy3Nby_b9QgP0tEQIHEreWTnllyxM01lUfSJ2a_uzcJjJHS8tfMqXnxWfP7rafVB4kBmaZ_3LCMTgaXJWMHXvWhEDVDFfkF7lbp0gM6uBjbVtGVeUyWkYZWXob2XMZ6fB3QMYV9MpsFO8IqMOvcRn9ElccbaOum0Dpd2A0ZV4V3cJBv0KQhQOVmMxAwXzNBtoN721QhifozZZYH0KsLDysp-TIWWrWOjLa7RDxxWZoV1l5YXn',
+    image: 'https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/solution_3.png',
     reverse: false
   }
 ];
