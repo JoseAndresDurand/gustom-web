@@ -418,14 +418,17 @@
                 /* Dimensiones Fijas del iPhone */
                 width: 430px; 
                 height: 932px; 
-                flex-shrink: 0; /* Evita que el flexbox lo aplaste */
+                flex-shrink: 0;
 
-                /* TRUCO DE ORO: Zoom Inteligente */
-                /* En lugar de 'transform', usamos 'zoom' o 'scale' limpio */
-                transform: scale(min(1, calc(95vh / 932)));
+                /* 👇 ELIMINAMOS LA LÍNEA DE 'transform: scale...' DE AQUÍ */
+                /* transform: ... (BORRAR) */
+
+                /* Agregamos esto para que el redimensionamiento sea suave */
+                transition: transform 0.1s ease-out; 
+                transform-origin: center center;
                 
-                /* Estética del dispositivo */
-                position: relative; /* Ya no usamos absolute para evitar el fallo de centrado */
+                /* El resto sigue igual... */
+                position: relative;
                 border: 12px solid #1a1a1a;
                 border-radius: 55px;
                 box-shadow: 0 20px 50px rgba(0,0,0,0.7);
@@ -450,6 +453,32 @@
             .restaurant-card { bottom: 220px !important; }
             .right-sidebar { bottom: 360px !important; }
             .bottom-sheet { bottom: 90px !important; }
+
+            /* 1. Obligamos al scroll y a los items a llenar los 932px del celular */
+            .feed-scroll, 
+            .feed-item {
+                height: 100% !important; /* Antes era 100vh, eso causaba el error */
+            }
+
+            /* 2. RESTAURAMOS POSICIONES ORIGINALES */
+            /* Al corregir la altura, ya no necesitamos empujarlos hacia arriba manualmente.
+               Volvemos a sus valores naturales o con un ligero ajuste por el borde grueso */
+            
+            .restaurant-card { 
+                /* Estaba en 220px, lo bajamos a su sitio natural + un poquito por el marco */
+                bottom: 160px !important; 
+            }
+            
+            .right-sidebar { 
+                bottom: 300px !important; 
+            }
+
+            /* Aseguramos que el video cubra todo el espacio negro */
+            .video-player {
+                height: 100% !important;
+                object-fit: cover !important;
+            }
+
         }
         /***************************************************************/
 
@@ -867,6 +896,41 @@
                 video: "https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/video_food_3.mp4"
             });
         }
+
+
+        // --- AUTO-SCALE FIX (Cerebro de Escalado) ---
+        // Esta función calcula si debe achicar el celular por ALTO o por ANCHO
+        function resizeApp() {
+            // Solo aplicamos esto en modo escritorio (> 500px)
+            if (window.innerWidth < 500) return;
+
+            const app = document.getElementById('app-container');
+            const winW = window.innerWidth;
+            const winH = window.innerHeight;
+            
+            // Dimensiones originales del diseño
+            const appW = 430;
+            const appH = 932;
+            
+            // Calculamos el factor de escala seguro (dejando 40px de margen)
+            const scale = Math.min(
+                (winW - 40) / appW,  // ¿Cabe en el ancho?
+                (winH - 40) / appH,  // ¿Cabe en el alto?
+                1                    // Nunca más grande que el original
+            );
+            
+            // Aplicamos la escala perfecta
+            app.style.transform = `scale(${scale})`;
+        }
+
+        // Ejecutar al cargar y cada vez que se mueva la ventana
+        window.addEventListener('resize', resizeApp);
+        window.addEventListener('load', resizeApp);
+        // Llamada inmediata por si acaso
+        resizeApp();
+
+
+
 
         // --- INIT ---
         function init() {
