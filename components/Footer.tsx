@@ -5,12 +5,12 @@ export const Footer: React.FC = () => {
     <footer className="bg-black py-12 px-6 border-t border-white/5">
       <div className="mx-auto max-w-[1200px] flex flex-col md:flex-row justify-between items-center gap-8">
         
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary text-background-dark">
-            <span className="material-symbols-outlined text-lg font-bold">restaurant</span>
+        {/* LOGO FOOTER */}
+          <div className="flex items-center gap-1 mb-4">
+            <h2 className="text-2xl font-black tracking-tighter uppercase text-white">
+              Gustom<span className="text-primary text-4xl leading-[0] mb-2 inline-block">.</span>
+            </h2>
           </div>
-          <h2 className="text-lg font-black tracking-tight uppercase text-white">Gustom</h2>
-        </div>
         
         <div className="flex gap-8 text-sm font-medium text-gray-500">
           <a href="#" className="hover:text-primary transition-colors">Términos</a>

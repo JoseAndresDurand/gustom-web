@@ -4,12 +4,13 @@ export const Navbar: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary text-background-dark shadow-[0_0_15px_rgba(244,157,37,0.5)]">
-            <span className="material-symbols-outlined font-bold text-xl">restaurant</span>
-          </div>
-          <h2 className="text-xl font-black tracking-tight uppercase">Gustom</h2>
-        </div>
+        
+        {/* LOGO GUSTOM CON PUNTO NARANJA */}
+        <a href="#" className="flex items-center gap-1 group">
+          <h2 className="text-2xl font-black tracking-tighter uppercase text-white transition-colors group-hover:text-gray-200">
+            Gustom<span className="text-primary text-4xl leading-[0] mb-2 inline-block">.</span>
+          </h2>
+        </a>
         
         <nav className="hidden md:flex items-center gap-8">
           <a className="text-sm font-medium text-gray-400 hover:text-primary transition-colors" href="#problema">Problema</a>
