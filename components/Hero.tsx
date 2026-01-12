@@ -30,7 +30,7 @@ export const Hero: React.FC = () => {
             </button>
             {/* Botón Ver Demo MODIFICADO */}
             <button 
-              onClick={() => window.location.href = '/mvp/'}
+              onClick={() => window.open('/mvp/', '_blank')}
               className="flex items-center justify-center gap-2 rounded border border-white/10 bg-white/5 px-8 py-4 text-base font-bold text-white transition-all hover:bg-white/10 hover:border-white/20"
             >
               <span className="material-symbols-outlined fill-1">play_circle</span>
