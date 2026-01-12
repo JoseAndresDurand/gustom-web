@@ -2,7 +2,7 @@ import React from 'react';
 
 export const ContactForm: React.FC = () => {
   return (
-    <section className="py-24 px-6 border-t border-white/5 bg-black">
+    <section id="contacto" className="py-24 px-6 border-t border-white/5 bg-black">
       <div className="mx-auto max-w-[500px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-black mb-4 text-white">Únete a la Revolución</h2>

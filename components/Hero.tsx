@@ -23,7 +23,9 @@ export const Hero: React.FC = () => {
           </p>
           
           <div className="flex flex-col gap-4 sm:flex-row">
-            <button className="flex items-center justify-center rounded bg-primary px-8 py-4 text-base font-black text-background-dark shadow-[0_0_20px_rgba(244,157,37,0.3)] transition-all hover:bg-primary/90 hover:shadow-[0_0_30px_rgba(244,157,37,0.5)] hover:-translate-y-1">
+            <button 
+              onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
+              className="flex items-center justify-center rounded bg-primary px-8 py-4 text-base font-black text-background-dark shadow-[0_0_20px_rgba(244,157,37,0.3)] transition-all hover:bg-primary/90 hover:shadow-[0_0_30px_rgba(244,157,37,0.5)] hover:-translate-y-1">
               Solicitar Acceso Anticipado
             </button>
             {/* Botón Ver Demo MODIFICADO */}
