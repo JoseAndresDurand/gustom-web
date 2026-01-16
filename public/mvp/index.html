@@ -884,7 +884,7 @@
                 id: 2, name: "La Elenita", price: "$$", cat: "Picantería",
                 rate: "4.6", count: "(600)", desc: "Guardianas de la tradición. El mejor rocoto relleno...",
                 likes: "4.2K", saves: "1.2K",
-                video: "https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/video_food_2.mp4"
+                video: "https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/video_food_3.mp4"
             }
         ];
 
@@ -893,7 +893,7 @@
             DATA.push({
                 id: i+3, name: "Restaurante Local " + (i+1), price: "$$$", cat: "Fusión", rate: "4.5", count: "(100)",
                 desc: "Experiencia culinaria única.", likes: "1K", saves: "200",
-                video: "https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/video_food_3.mp4"
+                video: "https://wvmwowfvmuoacxkuvtvi.supabase.co/storage/v1/object/public/public-assets/video_food_4.mp4"
             });
         }
 
@@ -939,14 +939,14 @@
                 const s = document.getElementById('splash-screen');
                 s.style.opacity = '0';
                 setTimeout(() => { s.style.display='none'; document.getElementById('app-container').style.display='block'; playVisible(); }, 500);
-            }, 2000);
+            }, 800);
 
             // Render Feed
             const root = document.getElementById('feed-root');
             DATA.forEach(d => {
                 const html = `
                     <div class="feed-item">
-                        <video class="video-player" loop muted playsinline poster="https://via.placeholder.com/400x800/121212/333333?text=Loading">
+                        <video class="video-player" loop muted playsinline preload="metadata" poster="https://via.placeholder.com/400x800/121212/333333?text=Loading">
                             <source src="${d.video}" type="video/mp4">
                         </video>
                         <div class="gradient-overlay"></div>
@@ -1167,7 +1167,8 @@
             });
         }
 
-        window.onload = init;
+        // Arranca apenas el código esté listo, sin esperar a las imágenes/videos
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
